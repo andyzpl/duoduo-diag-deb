@@ -21,7 +21,7 @@ jobs:
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y git clang lzma fakeroot dpkg-dev libxml2-utils
+          sudo apt-get install -y git clang lzma fakeroot dpkg-dev libxml2-utils libplist-dev libssl-dev
           git clone https://github.com/ProcursusTeam/ldid.git /tmp/ldid-src
           make -C /tmp/ldid-src
           sudo cp /tmp/ldid-src/ldid /usr/local/bin/ldid
