@@ -1,0 +1,9 @@
+Package: com.yg.duoduodiag
+Name: DuoduoDiag
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: Runtime diagnostics for com.aimi.store - logs anti-debug/integrity calls and environment.
+Maintainer: YG
+Author: YG
+Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5100) | ellekit

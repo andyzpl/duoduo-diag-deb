@@ -1,0 +1,55 @@
+name: Build DuoduoDiag deb
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'Tweak.xm'
+      - 'Makefile'
+      - 'control'
+      - 'DuoduoDiag.plist'
+      - '.github/workflows/build-deb.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git clang ldid lzma fakeroot dpkg-dev libxml2-utils
+
+      - name: Install Theos
+        run: |
+          git clone --recursive https://github.com/theos/theos.git $HOME/theos
+          echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+
+      - name: Install iOS SDK (16.5 toolchain target)
+        run: |
+          git clone --depth 1 --filter=blob:none https://github.com/theos/sdks.git $HOME/theos/sdks
+          ls $HOME/theos/sdks | head -20
+
+      - name: Build package
+        run: |
+          cd $GITHUB_WORKSPACE
+          make clean || true
+          make package DEBUG=0 FINALPACKAGE=1
+
+      - name: Collect artifact
+        run: |
+          mkdir -p out
+          cp packages/*.deb out/ 2>/dev/null || true
+          ls -la out
+          test -n "$(find out -name '*.deb' -print -quit)" || { echo "no deb produced"; exit 1; }
+
+      - name: Upload deb
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuoduoDiag-deb
+          path: out/*.deb
+          if-no-files-found: error
+          retention-days: 30
