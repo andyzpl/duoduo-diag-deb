@@ -32,9 +32,11 @@ jobs:
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
-      - name: Check SDK availability
+      - name: Install iOS SDK (16.5)
         run: |
-          ls $HOME/theos/sdks 2>/dev/null | head -20 || echo "no bundled sdks"
+          rm -rf $HOME/theos/sdks
+          git clone --depth 1 https://github.com/theos/sdks.git $HOME/theos/sdks
+          ls $HOME/theos/sdks | head -20
 
       - name: Build package
         run: |
