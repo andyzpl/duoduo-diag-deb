@@ -4,36 +4,22 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
-    paths:
-      - 'Tweak.xm'
-      - 'Makefile'
-      - 'control'
-      - 'DuoduoDiag.plist'
-      - '.github/workflows/build-deb.yml'
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: macos-14
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-
-      - name: Install build deps
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git clang lzma fakeroot dpkg-dev libxml2-utils libplist-dev libssl-dev
-          git clone https://github.com/ProcursusTeam/ldid.git /tmp/ldid-src
-          make -C /tmp/ldid-src
-          sudo cp /tmp/ldid-src/ldid /usr/local/bin/ldid
-          ldid -v 2>&1 || true
 
       - name: Install Theos
         run: |
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
 
-      - name: Install iOS SDK (16.5)
+      - name: Install ldid and iOS SDK
         run: |
+          brew install ldid || true
           rm -rf $HOME/theos/sdks
           git clone --depth 1 https://github.com/theos/sdks.git $HOME/theos/sdks
           ls $HOME/theos/sdks | head -20
