@@ -26,14 +26,19 @@ jobs:
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
           rm -rf $HOME/theos/sdks
           git clone --depth 1 https://github.com/theos/sdks.git $HOME/theos/sdks
-          mkdir -p $HOME/theos/toolchain/linux/iphone/bin
-          ln -sf $(which clang) $HOME/theos/toolchain/linux/iphone/bin/clang
-          ln -sf $(which clang++) $HOME/theos/toolchain/linux/iphone/bin/clang++
-          ln -sf $(which llvm-strip) $HOME/theos/toolchain/linux/iphone/bin/strip
-          ln -sf $(which llvm-ar) $HOME/theos/toolchain/linux/iphone/bin/ar
-          ln -sf $(which llvm-ranlib) $HOME/theos/toolchain/linux/iphone/bin/ranlib
-          ln -sf $(which llvm-nm) $HOME/theos/toolchain/linux/iphone/bin/nm
-          for t in ld ld64 ld64.lld lld; do p=$(which $t 2>/dev/null || true); [ -n "$p" ] && ln -sf "$p" $HOME/theos/toolchain/linux/iphone/bin/$t || true; done
+
+      - name: Setup toolchain symlinks
+        run: |
+          BIN=$HOME/theos/toolchain/linux/iphone/bin
+          mkdir -p $BIN
+          ln -sf $(which clang) $BIN/clang
+          ln -sf $(which clang++) $BIN/clang++
+          ln -sf $(which llvm-strip) $BIN/strip
+          ln -sf $(which llvm-ar) $BIN/ar
+          ln -sf $(which llvm-ranlib) $BIN/ranlib
+          ln -sf $(which llvm-nm) $BIN/nm
+          for t in ld ld64 ld64.lld lld; do p=$(which $t 2>/dev/null || true); [ -n "$p" ] && ln -sf "$p" $BIN/$t || true; done
+          ls -la $BIN
 
       - name: Build package
         run: |
