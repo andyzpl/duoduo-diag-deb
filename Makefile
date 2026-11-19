@@ -9,6 +9,7 @@ DuoduoDiag_FILES = Tweak.xm
 DuoduoDiag_USE_MODULES = 0
 DuoduoDiag_FRAMEWORKS = UIKit Security Foundation
 DuoduoDiag_CFLAGS = -fobjc-arc -Wno-unused-parameter
+DuoduoDiag_LDFLAGS = -fuse-ld=lld
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
