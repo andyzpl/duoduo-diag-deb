@@ -52,21 +52,31 @@ static void DDumpEnvironment(void) {
     DDAppend([NSString stringWithFormat:@"URL_SCHEMES=%@", DDDictDescription(info[@"CFBundleURLTypes"])]);
     DDAppend([NSString stringWithFormat:@"QUERY_SCHEMES=%@", DDDictDescription(info[@"LSApplicationQueriesSchemes"])]);
 
-    SecCodeRef code = NULL;
-    if (SecCodeCopySelf(kSecCSDefaultFlags, &code) == errSecSuccess) {
-        CFDictionaryRef ent = NULL;
-        if (SecCodeCopySigningInformation(code, kSecCSSigningInformationTypeEntitlements, &ent) == errSecSuccess && ent) {
-            DDAppend([NSString stringWithFormat:@"ENTITLEMENTS=%@", DDDictDescription((__bridge id)ent)]);
-            CFRelease(ent);
-        } else {
-            DDAppend(@"ENTITLEMENTS=(read failed)");
+    /* iOS SDK does not expose SecCode API in headers; resolve at runtime via dlsym */
+    typedef int (*SecCodeCopySelf_t)(unsigned int, void **);
+    typedef int (*SecCodeCopySigningInformation_t)(void *, unsigned int, CFDictionaryRef *);
+    SecCodeCopySelf_t pCopySelf = (SecCodeCopySelf_t)dlsym(RTLD_DEFAULT, "SecCodeCopySelf");
+    SecCodeCopySigningInformation_t pCopyInfo = (SecCodeCopySigningInformation_t)dlsym(RTLD_DEFAULT, "SecCodeCopySigningInformation");
+    if (pCopySelf && pCopyInfo) {
+        void *code = NULL;
+        if (pCopySelf(0, &code) == 0 && code) {
+            CFDictionaryRef ent = NULL;
+            /* kSecCSSigningInformationTypeEntitlements = 6 */
+            if (pCopyInfo(code, 6, &ent) == 0 && ent) {
+                DDAppend([NSString stringWithFormat:@"ENTITLEMENTS=%@", DDDictDescription((__bridge id)ent)]);
+                CFRelease(ent);
+            } else {
+                DDAppend(@"ENTITLEMENTS=(read failed)");
+            }
+            CFDictionaryRef sig = NULL;
+            /* kSecCSSigningInformationTypeName = 10 */
+            if (pCopyInfo(code, 10, &sig) == 0 && sig) {
+                DDAppend([NSString stringWithFormat:@"SIGNING_NAME=%@", DDDictDescription((__bridge id)sig)]);
+                CFRelease(sig);
+            }
         }
-        CFDictionaryRef sig = NULL;
-        if (SecCodeCopySigningInformation(code, kSecCSSigningInformationTypeName, &sig) == errSecSuccess && sig) {
-            DDAppend([NSString stringWithFormat:@"SIGNING_NAME=%@", DDDictDescription((__bridge id)sig)]);
-            CFRelease(sig);
-        }
-        CFRelease(code);
+    } else {
+        DDAppend(@"SecCode API unavailable at runtime (dlsym failed)");
     }
 
     int jailbreak = 0;
