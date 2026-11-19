@@ -1,6 +1,7 @@
 #!/bin/bash
-# Run on jailbroken device: export DuoduoDiag log + process/signature/network snapshot
+# Run on jailbroken device: export DuoduoDiag log + official-app check + process/signature snapshot
 LOG=/var/mobile/Documents/duoduo_diag.log
+VERIFY=/var/mobile/Documents/duoduo_official_check.txt
 OUT=/var/mobile/Documents/duoduo_diag_export.txt
 {
   echo "===== EXPORT TIME: $(date) ====="
@@ -9,6 +10,8 @@ OUT=/var/mobile/Documents/duoduo_diag_export.txt
   sw_vers 2>/dev/null
   echo "===== DUODUO PROCESS ====="
   ps aux | grep -i AMStation | grep -v grep
+  echo "===== OFFICIAL CHECK REPORT ====="
+  cat "$VERIFY" 2>/dev/null || echo "(verify report missing)"
   echo "===== LOG LINES ====="
   wc -l "$LOG" 2>/dev/null
   echo "===== LOG CONTENT ====="

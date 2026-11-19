@@ -1,8 +1,8 @@
 Package: com.yg.duoduodiag
 Name: DuoduoDiag
-Version: 0.0.1
+Version: 0.0.2
 Architecture: iphoneos-arm
-Description: Runtime diagnostics for com.aimi.store - logs anti-debug/integrity calls and environment.
+Description: Runtime diagnostics + official-app integrity check for com.aimi.store. Detects decrypted binary, invalid signature, injected dylibs, jailbreak markers; writes /var/mobile/Documents/duoduo_official_check.txt.
 Maintainer: YG
 Author: YG
 Section: Tweaks
