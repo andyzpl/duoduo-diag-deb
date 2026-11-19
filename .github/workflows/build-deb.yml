@@ -7,25 +7,28 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Install build tools
+      - name: Install build deps
         run: |
-          brew install ldid dpkg
+          sudo apt-get update
+          sudo apt-get install -y git clang lzma fakeroot dpkg-dev libxml2-utils libplist-dev libssl-dev
+          git clone https://github.com/ProcursusTeam/ldid.git /tmp/ldid-src
+          make -C /tmp/ldid-src
+          sudo cp /tmp/ldid-src/ldid /usr/local/bin/ldid
 
-      - name: Install Theos
+      - name: Install Theos and SDK
         run: |
           git clone --recursive https://github.com/theos/theos.git $HOME/theos
           echo "THEOS=$HOME/theos" >> $GITHUB_ENV
-
-      - name: Install iOS SDK
-        run: |
           rm -rf $HOME/theos/sdks
           git clone --depth 1 https://github.com/theos/sdks.git $HOME/theos/sdks
-          ls $HOME/theos/sdks | head -20
+          mkdir -p $HOME/theos/toolchain/linux/iphone/bin
+          ln -sf $(which clang) $HOME/theos/toolchain/linux/iphone/bin/clang
+          ln -sf $(which clang++) $HOME/theos/toolchain/linux/iphone/bin/clang++
 
       - name: Build package
         run: |

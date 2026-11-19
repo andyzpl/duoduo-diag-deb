@@ -6,6 +6,7 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = DuoduoDiag
 DuoduoDiag_FILES = Tweak.xm
+DuoduoDiag_USE_MODULES = 0
 DuoduoDiag_FRAMEWORKS = UIKit Security Foundation
 DuoduoDiag_CFLAGS = -fobjc-arc -Wno-unused-parameter
 
