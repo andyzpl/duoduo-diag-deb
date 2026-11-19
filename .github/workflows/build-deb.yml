@@ -33,10 +33,15 @@ jobs:
           mkdir -p $BIN
           ln -sf $(which clang) $BIN/clang
           ln -sf $(which clang++) $BIN/clang++
-          ln -sf $(which llvm-strip) $BIN/strip
-          ln -sf $(which llvm-ar) $BIN/ar
-          ln -sf $(which llvm-ranlib) $BIN/ranlib
-          ln -sf $(which llvm-nm) $BIN/nm
+          SP=$(which llvm-strip 2>/dev/null || ls /usr/bin/llvm-strip* 2>/dev/null | head -1)
+          AR=$(which llvm-ar 2>/dev/null || ls /usr/bin/llvm-ar* 2>/dev/null | head -1)
+          RN=$(which llvm-ranlib 2>/dev/null || ls /usr/bin/llvm-ranlib* 2>/dev/null | head -1)
+          NM=$(which llvm-nm 2>/dev/null || ls /usr/bin/llvm-nm* 2>/dev/null | head -1)
+          ln -sf "$SP" $BIN/strip
+          ln -sf "$AR" $BIN/ar
+          ln -sf "$RN" $BIN/ranlib
+          ln -sf "$NM" $BIN/nm
+          echo "strip=$SP ar=$AR ranlib=$RN nm=$NM"
           for t in ld ld64 ld64.lld lld; do p=$(which $t 2>/dev/null || true); [ -n "$p" ] && ln -sf "$p" $BIN/$t || true; done
           ls -la $BIN
 
