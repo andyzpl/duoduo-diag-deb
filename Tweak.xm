@@ -292,8 +292,6 @@ static int my_CopySigningInfo(void *code, unsigned int flags, CFDictionaryRef *i
     MSHookFunction((void *)sysctlbyname, (void *)my_sysctlbyname, (void **)&orig_sysctlbyname);
     DDAppend(@"HOOKED: sysctl, sysctlbyname");
 
-    typedef int (*SecCodeCheckValidity_t)(void *, unsigned int, void *);
-    typedef int (*SecCodeCopySigningInformation_t)(void *, unsigned int, CFDictionaryRef *);
     void *pCheck = dlsym(RTLD_DEFAULT, "SecCodeCheckValidity");
     void *pInfo  = dlsym(RTLD_DEFAULT, "SecCodeCopySigningInformation");
     if (pCheck) {
