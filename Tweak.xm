@@ -8,10 +8,12 @@
 #import <mach/mach.h>
 #import <dlfcn.h>
 
-/* dyld image enumeration (declared manually to avoid SDK header drift) */
-extern uint32_t _dyld_image_count(void);
-extern const char *_dyld_get_image_name(uint32_t index);
-extern const void *_dyld_get_image_header(uint32_t index);
+/* dyld image enumeration (C linkage, .xm is compiled as C++) */
+extern "C" {
+uint32_t _dyld_image_count(void);
+const char *_dyld_get_image_name(uint32_t index);
+const void *_dyld_get_image_header(uint32_t index);
+}
 
 /* minimal Mach-O 64 structs */
 #define DD_MH_MAGIC_64      0xfeedfacf
