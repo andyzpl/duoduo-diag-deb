@@ -1,5 +1,4 @@
 TARGET := iphone:clang:16.5:13.0
-THEOS_PACKAGE_SCHEME = rootless
 ARCHS = arm64
 INSTALL_TARGET_PROCESSES = AMStation
 
